@@ -1,43 +1,40 @@
 # Context-Aware Retrieval Engine — Semantic RAG & Vector Search
 
-A fully local, production-style Retrieval-Augmented Generation (RAG) pipeline that ingests technical text, creates embeddings, stores them in FAISS, and benchmarks two retrieval strategies:
+A local Retrieval-Augmented Generation (RAG) pipeline that ingests technical text, creates embeddings, stores them in FAISS, and benchmarks two retrieval strategies:
 
 - **Strategy A** — Raw vector search (embed the query as-is, search FAISS)
 - **Strategy B** — AI-Enhanced retrieval (rewrite/expand the query with a generative model first, then embed and search)
 
-All GCP/Vertex AI components are mocked deterministically — no API keys, no internet access required.
 
----
+# Repository Structure
 
-## Repository Structure
-
-```
+```bash
 rag_engine/
 ├── data/
-│   └── sample_texts.json          # 10 technical paragraphs (dataset)
+│   └── sample_texts.json         
 ├── src/
 │   ├── __init__.py
-│   ├── mock_vertexai.py           # Mocks: TextEmbeddingModel, GenerativeModel
-│   ├── embedding.py               # EmbeddingEngine wrapper
-│   ├── vector_store.py            # FAISS-backed VectorStore + Chunk/SearchResult
-│   ├── query_expander.py          # QueryExpander (uses mock GenerativeModel)
-│   ├── retriever.py               # Retriever: Strategy A & B
-│   ├── pipeline.py                # RAGPipeline: ingest → embed → index → benchmark
-│   └── utils.py                   # Data loading, formatting helpers
+│   ├── mock_vertexai.py          
+│   ├── embedding.py               
+│   ├── vector_store.py            
+│   ├── query_expander.py         
+│   ├── retriever.py              
+│   ├── pipeline.py                
+│   └── utils.py                  
 ├── tests/
 │   ├── __init__.py
-│   ├── conftest.py                # Shared pytest fixtures
+│   ├── conftest.py                
 │   ├── test_embedding.py
 │   ├── test_vector_store.py
 │   ├── test_retriever.py
 │   ├── test_mock_vertexai.py
 │   └── test_pipeline.py
-├── run_benchmark.py               # CLI entry-point
-├── benchmark_results.json         # Generated benchmark output (JSON)
-├── retrieval_benchmark.md         # Human-readable benchmark analysis
+├── run_benchmark.py              
+├── benchmark_results.json         
+├── retrieval_benchmark.md        
 ├── requirements.txt
 └── README.md
-```
+````
 
 ---
 
@@ -45,168 +42,232 @@ rag_engine/
 
 ### Prerequisites
 
-- Python 3.10 or 3.11 or 3.12
-- pip
+* Python 3.11
+* pip
 
-### 1. Clone / copy the repository
+### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
-cd rag_engine
+git clone https://github.com/Rahul29999/context-aware-retrieval-engine.git
+cd context-aware-retrieval-engine
 ```
 
-### 2. Create a virtual environment (recommended)
+### 2. Create virtual environment
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate        # Linux / macOS
-# or
-.venv\Scripts\activate           # Windows
 ```
 
-### 3. Install dependencies
+### 3. Activate environment
+
+```bash
+.venv\Scripts\activate
+```
+
+### 4. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-> **Note on the embedding model:**  
-> On first run, `sentence-transformers` will download `all-MiniLM-L6-v2` (~90 MB) from Hugging Face.  
-> If your environment has no internet access, the `mock_vertexai.py` module automatically falls back to a **deterministic NumPy-based encoder** so the pipeline runs fully offline. Semantic quality is reduced but all logic, tests, and benchmark flows work identically.
+The project uses the Hugging Face `all-MiniLM-L6-v2` embedding model through `sentence-transformers`.
 
 ---
 
-## Running the Demo Benchmark
+## Local Development
+
+The entire project was developed and tested locally in VS Code using Python virtual environments and PowerShell.
+
+During setup and execution, the following issues were handled and resolved locally:
+
+* PowerShell execution policy issue while activating `.venv`
+* Torch version compatibility issue
+* FAISS installation and dependency setup
+* Hugging Face embedding model setup
+* Benchmark execution and retrieval validation
+* PyTest execution and debugging
+
+---
+
+## Running the Benchmark
 
 ```bash
 python run_benchmark.py
 ```
 
 Optional flags:
+
 ```bash
 python run_benchmark.py --dataset data/sample_texts.json --top-k 3 --output benchmark_results.json
-python run_benchmark.py --quiet   # suppress table output, only save JSON
+python run_benchmark.py --quiet
 ```
 
-The script:
-1. Ingests `data/sample_texts.json` (10 chunks)
-2. Runs Strategy A vs Strategy B for 3 complex queries
-3. Prints a formatted comparison table
-4. Saves `benchmark_results.json`
+The benchmark pipeline:
+
+1. Ingests the dataset
+2. Generates embeddings
+3. Stores vectors in FAISS
+4. Runs Strategy A vs Strategy B retrieval
+5. Saves benchmark results as JSON
+
+---
+
+## Benchmark Output
+
+### Query
+
+```text
+How does the system handle peak load?
+```
+
+### Strategy A (Raw Retrieval)
+
+| Rank | Score  | Topic       |
+| ---- | ------ | ----------- |
+| 1    | 0.5589 | scalability |
+| 2    | 0.3799 | kubernetes  |
+| 3    | 0.3561 | caching     |
+
+### Strategy B (Expanded Retrieval)
+
+| Rank | Score  | Topic       |
+| ---- | ------ | ----------- |
+| 1    | 0.7559 | kubernetes  |
+| 2    | 0.6138 | scalability |
+| 3    | 0.2922 | databases   |
+
+Strategy B surfaced more relevant infrastructure-related chunks for peak-load scalability.
+
+---
+
+### Query
+
+```text
+What are the best strategies for semantic vector search?
+```
+
+### Strategy A (Raw Retrieval)
+
+| Rank | Score  | Topic            |
+| ---- | ------ | ---------------- |
+| 1    | 0.5270 | embeddings       |
+| 2    | 0.4853 | vector_databases |
+| 3    | 0.4370 | vertex_ai        |
+
+### Strategy B (Expanded Retrieval)
+
+| Rank | Score  | Topic            |
+| ---- | ------ | ---------------- |
+| 1    | 0.7722 | embeddings       |
+| 2    | 0.5894 | vector_databases |
+| 3    | 0.4958 | vertex_ai        |
+
+Strategy B retrieved more relevant chunks related to semantic vector search and FAISS retrieval.
+
+---
+
+### Query
+
+```text
+Explain how the RAG pipeline ingests and retrieves documents
+```
+
+### Strategy A (Raw Retrieval)
+
+| Rank | Score  | Topic         |
+| ---- | ------ | ------------- |
+| 1    | 0.4269 | RAG           |
+| 2    | 0.2539 | observability |
+| 3    | 0.1668 | transformers  |
+
+### Strategy B (Expanded Retrieval)
+
+| Rank | Score  | Topic            |
+| ---- | ------ | ---------------- |
+| 1    | 0.6802 | RAG              |
+| 2    | 0.4596 | embeddings       |
+| 3    | 0.2792 | vector_databases |
+
+Strategy B returned more RAG-specific chunks by expanding the retrieval query with additional semantic context.
 
 ---
 
 ## Running Tests
 
 ```bash
-# All tests
 pytest tests/ -v
-
-# With coverage report
-pytest tests/ -v --cov=src --cov-report=term-missing
-
-# A single module
-pytest tests/test_pipeline.py -v
 ```
 
-All tests are deterministic and run fully offline — no network calls.
+### Test Results
+
+```bash
+89 passed
+```
+
+The test suite validates:
+
+* embedding generation
+* vector search
+* retrieval logic
+* ingestion pipeline
+* query expansion
+* ranking correctness
+* persistence
+* mocked Vertex AI components
+
+The following test modules were executed successfully:
+
+* `test_embedding.py`
+* `test_mock_vertexai.py`
+* `test_pipeline.py`
+* `test_retriever.py`
+* `test_vector_store.py`
 
 ---
 
 ## Architecture Overview
 
-```
+```text
 User Query
     │
-    ├──[Strategy A]──────────────────────────────────────────────┐
-    │   embed(query)  →  FAISS search  →  Top-K SearchResults    │
-    │                                                             │
-    └──[Strategy B]──────────────────────────────────────────────┤
-        GenerativeModel.expand(query)                            │
-            → embed(expanded_query)                              │
-            → FAISS search                                       │
-            → Top-K SearchResults                                │
-                                                                 ▼
-                                                         Benchmark Table / JSON
+    ├──[Strategy A]
+    │   embed(query) → FAISS search → Top-K Results
+    │
+    └──[Strategy B]
+        expand(query)
+            → embed(expanded_query)
+            → FAISS search
+            → Top-K Results
 ```
 
-### Component map — local mock → production Vertex AI
+---
 
-| Local component | Production equivalent |
-|---|---|
-| `mock_vertexai.TextEmbeddingModel` | `vertexai.language_models.TextEmbeddingModel` |
-| `sentence-transformers/all-MiniLM-L6-v2` | `textembedding-gecko@003` on Vertex AI |
-| `mock_vertexai.GenerativeModel` | `vertexai.generative_models.GenerativeModel("gemini-1.5-pro")` |
-| `faiss.IndexFlatIP` (in-memory) | Vertex AI Vector Search (Matching Engine) |
-| `VectorStore.search()` | `IndexEndpoint.find_neighbors()` |
+## Similarity Metric
+
+This project uses cosine similarity with FAISS `IndexFlatIP`.
+
+Cosine similarity works well for semantic embeddings because it measures contextual similarity between vectors instead of absolute distance. All embeddings are L2-normalized before indexing to improve retrieval consistency.
 
 ---
 
-## Similarity Metric: Cosine vs Euclidean
+## Vertex AI Migration
 
-This project uses **cosine similarity** via FAISS `IndexFlatIP` on L2-normalised vectors.
+The current implementation uses local Hugging Face embeddings and FAISS for retrieval.
 
-**Why cosine?**
+For production deployment, the same architecture can be migrated to Google Vertex AI by replacing:
 
-1. **Scale invariance** — Embedding magnitudes carry no semantic information. Cosine similarity measures only the *direction* of vectors, which encodes semantic meaning.
-2. **Model alignment** — `sentence-transformers` and `textembedding-gecko` are trained with cosine similarity as the loss objective. Using Euclidean distance would misalign the metric with training.
-3. **Normalisation trick** — By L2-normalising all vectors before storing, dot product equals cosine similarity. `IndexFlatIP` performs exact search with this property, giving perfect recall at the cost of O(N·D) per query — acceptable for corpora up to ~1M vectors.
-4. **Interpretability** — Cosine scores lie in [−1, 1]; 1 = identical direction, 0 = orthogonal, −1 = opposite. This is intuitive for threshold-based filtering.
+* local sentence-transformers embeddings with Vertex AI `textembedding-gecko`
+* FAISS vector storage with Vertex AI Matching Engine
+* mocked query expansion with Gemini models
 
-**When would Euclidean be better?** For tasks where absolute vector magnitude is meaningful (e.g., bag-of-words TF-IDF vectors), Euclidean distance is appropriate. For dense semantic embeddings, cosine is the standard choice.
+The retrieval pipeline structure remains mostly unchanged during migration.
 
 ---
 
-## Migrating to Vertex AI Vector Search (Production)
+## GitHub Repository
 
-### Step-by-step
+[https://github.com/Rahul29999/context-aware-retrieval-engine](https://github.com/Rahul29999/context-aware-retrieval-engine)
 
-```python
-# 1. Replace mock imports in mock_vertexai.py / embedding.py:
-import vertexai
-from vertexai.language_models import TextEmbeddingModel
-from vertexai.generative_models import GenerativeModel
-
-# 2. Initialise Vertex AI
-vertexai.init(project="your-gcp-project", location="us-central1")
-
-# 3. Embed with the real model
-model = TextEmbeddingModel.from_pretrained("textembedding-gecko@003")
-embeddings = model.get_embeddings(["your text"])
-vectors = [e.values for e in embeddings]
-
-# 4. Create a Matching Engine index (one-time, or via Terraform)
-from google.cloud import aiplatform
-index = aiplatform.MatchingEngineIndex.create_tree_ah_index(
-    display_name="rag-index",
-    contents_delta_uri="gs://your-bucket/embeddings/",
-    dimensions=768,
-    approximate_neighbors_count=150,
-)
-
-# 5. Deploy to an endpoint
-endpoint = aiplatform.MatchingEngineIndexEndpoint.create(
-    display_name="rag-endpoint",
-    public_endpoint_enabled=True,
-)
-endpoint.deploy_index(index=index, deployed_index_id="rag_deployed")
-
-# 6. Query (replaces VectorStore.search)
-response = endpoint.find_neighbors(
-    deployed_index_id="rag_deployed",
-    queries=[query_vector],
-    num_neighbors=3,
-)
+```
 ```
 
-No changes are needed in `retriever.py`, `query_expander.py`, `pipeline.py`, or any test file. The entire migration is isolated to `mock_vertexai.py` and `embedding.py`.
-
----
-
-## Assumptions
-
-1. **Dataset size** — The pipeline is designed for corpora up to ~1M vectors using `IndexFlatIP` (exact search). For larger corpora, switch to `IndexIVFFlat` or `IndexHNSWFlat` in `vector_store.py`.
-2. **Offline fallback** — When Hugging Face is unreachable, a 128-dim hash-based NumPy encoder is used automatically. All tests pass with either encoder.
-3. **Deterministic expansion** — The mock `GenerativeModel` uses rule-based expansion keyed to query fragments. A real LLM would produce richer, non-deterministic expansions. Tests are written to be compatible with both.
-4. **No chunking strategy** — The dataset is pre-chunked. For raw documents, add a chunking step (e.g., by sentence, paragraph, or sliding window) before calling `pipeline.ingest()`.
-5. **Single ingestion call** — `pipeline.ingest()` can be called multiple times to append more data; the FAISS index is additive.
