@@ -1,0 +1,173 @@
+[
+  {
+    "original_query": "How does the system handle peak load?",
+    "expanded_query": "system performance under high traffic load spikes auto-scaling horizontal scaling capacity management kubernetes HPA load balancer",
+    "strategy_a": [
+      {
+        "rank": 1,
+        "chunk_id": "chunk_001",
+        "score": 0.558943,
+        "text": "Modern distributed systems handle peak load through horizontal scaling and intelligent load balancing. When traffic spikes occur, auto-scaling groups automatically provision new compute instances within minutes. Load balancers distribute incoming requests across healthy nodes using algorithms such as round-robin, least-connections, or consistent hashing. Circuit breakers prevent cascading failures by halting requests to unhealthy downstream services. Rate limiting and throttling protect backend services from being overwhelmed during sudden traffic surges.",
+        "source": "system_architecture_guide",
+        "topic": "scalability"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "chunk_007",
+        "score": 0.379908,
+        "text": "Kubernetes manages containerised workloads at scale through declarative resource definitions. The Horizontal Pod Autoscaler (HPA) monitors CPU and memory utilisation and adjusts replica counts automatically to meet demand. The Vertical Pod Autoscaler (VPA) recommends or applies optimal resource requests and limits based on observed usage. Cluster Autoscaler provisions or decommissions worker nodes in response to pending pods. Resource quotas and limit ranges enforce fair usage across namespaces. Combined, these mechanisms allow a Kubernetes cluster to absorb sudden traffic spikes while minimising idle resource costs.",
+        "source": "cloud_infrastructure_guide",
+        "topic": "kubernetes"
+      },
+      {
+        "rank": 3,
+        "chunk_id": "chunk_005",
+        "score": 0.356084,
+        "text": "Caching is a critical technique for reducing latency and handling high-throughput workloads. In-memory caches such as Redis and Memcached store frequently accessed data close to the application layer, eliminating expensive database round-trips. Cache invalidation strategies include time-to-live (TTL) expiry, write-through, write-behind, and cache-aside patterns. For peak traffic scenarios, a multi-tier cache hierarchy combines a local in-process cache with a shared distributed cache. Cache stampede prevention uses probabilistic early expiry or lock-based refresh to avoid thundering herd problems.",
+        "source": "performance_engineering",
+        "topic": "caching"
+      }
+    ],
+    "strategy_b": [
+      {
+        "rank": 1,
+        "chunk_id": "chunk_007",
+        "score": 0.755917,
+        "text": "Kubernetes manages containerised workloads at scale through declarative resource definitions. The Horizontal Pod Autoscaler (HPA) monitors CPU and memory utilisation and adjusts replica counts automatically to meet demand. The Vertical Pod Autoscaler (VPA) recommends or applies optimal resource requests and limits based on observed usage. Cluster Autoscaler provisions or decommissions worker nodes in response to pending pods. Resource quotas and limit ranges enforce fair usage across namespaces. Combined, these mechanisms allow a Kubernetes cluster to absorb sudden traffic spikes while minimising idle resource costs.",
+        "source": "cloud_infrastructure_guide",
+        "topic": "kubernetes"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "chunk_001",
+        "score": 0.613794,
+        "text": "Modern distributed systems handle peak load through horizontal scaling and intelligent load balancing. When traffic spikes occur, auto-scaling groups automatically provision new compute instances within minutes. Load balancers distribute incoming requests across healthy nodes using algorithms such as round-robin, least-connections, or consistent hashing. Circuit breakers prevent cascading failures by halting requests to unhealthy downstream services. Rate limiting and throttling protect backend services from being overwhelmed during sudden traffic surges.",
+        "source": "system_architecture_guide",
+        "topic": "scalability"
+      },
+      {
+        "rank": 3,
+        "chunk_id": "chunk_004",
+        "score": 0.292171,
+        "text": "Distributed databases achieve high availability through replication across multiple nodes. Leader-follower replication routes all writes to a primary node, which asynchronously propagates changes to replicas. Quorum-based consensus protocols such as Raft and Paxos ensure that a majority of nodes agree before a write is committed. Read replicas can serve read-heavy workloads and reduce latency for geographically distributed users. Eventual consistency trade-offs must be carefully evaluated; systems like Apache Cassandra favour availability over strict consistency under the CAP theorem.",
+        "source": "system_architecture_guide",
+        "topic": "databases"
+      }
+    ],
+    "comparison_note": "Strategy B surfaced more relevant chunks for peak-load scalability.  Strategy B typically adds Kubernetes/HPA terms that improve recall of infrastructure chunks."
+  },
+  {
+    "original_query": "What are the best strategies for semantic vector search?",
+    "expanded_query": "vector embedding similarity search FAISS cosine distance nearest neighbour retrieval semantic search dense representation",
+    "strategy_a": [
+      {
+        "rank": 1,
+        "chunk_id": "chunk_002",
+        "score": 0.527021,
+        "text": "Vector embeddings are dense numerical representations of text that capture semantic meaning. Unlike traditional keyword search, embedding-based retrieval computes similarity in a high-dimensional space, enabling retrieval of conceptually related content even when exact keywords differ. Models such as sentence-transformers encode sentences into fixed-length vectors of 384 or 768 dimensions. Cosine similarity measures the angle between two vectors, returning a score between -1 and 1, where 1 indicates identical semantic meaning. This approach powers modern search, recommendation, and question-answering systems.",
+        "source": "ml_engineering_handbook",
+        "topic": "embeddings"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "chunk_008",
+        "score": 0.485275,
+        "text": "FAISS (Facebook AI Similarity Search) provides multiple index types optimised for different trade-offs between speed, memory, and recall. The flat index (IndexFlatL2, IndexFlatIP) performs exact brute-force search and is suitable for small corpora up to a few hundred thousand vectors. IVF (Inverted File) indexes partition the vector space into Voronoi cells, enabling approximate search by probing only a subset of cells. HNSW (Hierarchical Navigable Small World) graphs offer very fast approximate search with high recall. Product Quantisation (PQ) compresses vectors to reduce memory footprint at the cost of some recall accuracy.",
+        "source": "ml_engineering_handbook",
+        "topic": "vector_databases"
+      },
+      {
+        "rank": 3,
+        "chunk_id": "chunk_010",
+        "score": 0.437041,
+        "text": "Vertex AI Vector Search (formerly Matching Engine) is a managed, fully scalable vector similarity search service on Google Cloud. It supports billions of vectors with low-latency approximate nearest neighbour (ANN) queries. Deployments create an Index resource from embeddings stored in Cloud Storage, then deploy the Index to an IndexEndpoint for serving. The service integrates with Vertex AI Embeddings API to generate vectors from text or multimodal content. In production, teams replace local FAISS indexes with Vertex AI Vector Search endpoints, update embedding calls to use the Vertex AI SDK, and rely on IAM for access control and VPC Service Controls for network security.",
+        "source": "cloud_infrastructure_guide",
+        "topic": "vertex_ai"
+      }
+    ],
+    "strategy_b": [
+      {
+        "rank": 1,
+        "chunk_id": "chunk_002",
+        "score": 0.772187,
+        "text": "Vector embeddings are dense numerical representations of text that capture semantic meaning. Unlike traditional keyword search, embedding-based retrieval computes similarity in a high-dimensional space, enabling retrieval of conceptually related content even when exact keywords differ. Models such as sentence-transformers encode sentences into fixed-length vectors of 384 or 768 dimensions. Cosine similarity measures the angle between two vectors, returning a score between -1 and 1, where 1 indicates identical semantic meaning. This approach powers modern search, recommendation, and question-answering systems.",
+        "source": "ml_engineering_handbook",
+        "topic": "embeddings"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "chunk_008",
+        "score": 0.589362,
+        "text": "FAISS (Facebook AI Similarity Search) provides multiple index types optimised for different trade-offs between speed, memory, and recall. The flat index (IndexFlatL2, IndexFlatIP) performs exact brute-force search and is suitable for small corpora up to a few hundred thousand vectors. IVF (Inverted File) indexes partition the vector space into Voronoi cells, enabling approximate search by probing only a subset of cells. HNSW (Hierarchical Navigable Small World) graphs offer very fast approximate search with high recall. Product Quantisation (PQ) compresses vectors to reduce memory footprint at the cost of some recall accuracy.",
+        "source": "ml_engineering_handbook",
+        "topic": "vector_databases"
+      },
+      {
+        "rank": 3,
+        "chunk_id": "chunk_010",
+        "score": 0.495809,
+        "text": "Vertex AI Vector Search (formerly Matching Engine) is a managed, fully scalable vector similarity search service on Google Cloud. It supports billions of vectors with low-latency approximate nearest neighbour (ANN) queries. Deployments create an Index resource from embeddings stored in Cloud Storage, then deploy the Index to an IndexEndpoint for serving. The service integrates with Vertex AI Embeddings API to generate vectors from text or multimodal content. In production, teams replace local FAISS indexes with Vertex AI Vector Search endpoints, update embedding calls to use the Vertex AI SDK, and rely on IAM for access control and VPC Service Controls for network security.",
+        "source": "cloud_infrastructure_guide",
+        "topic": "vertex_ai"
+      }
+    ],
+    "comparison_note": "Strategy B retrieved more on-topic vector-search chunks.  Expansion adds FAISS/cosine/ANN terminology that increases recall of the FAISS and embeddings chunks."
+  },
+  {
+    "original_query": "Explain how the RAG pipeline ingests and retrieves documents",
+    "expanded_query": "retrieval augmented generation RAG pipeline ingestion chunking embedding vector store context grounding language model",
+    "strategy_a": [
+      {
+        "rank": 1,
+        "chunk_id": "chunk_003",
+        "score": 0.426939,
+        "text": "Retrieval-Augmented Generation (RAG) combines a retrieval component with a language model to produce grounded, factual responses. During ingestion, source documents are chunked, embedded, and stored in a vector database. At query time, the user question is embedded and the nearest chunks are retrieved. These chunks form the context that is passed alongside the query to a generative model. RAG reduces hallucination by anchoring the model output to retrieved evidence. It also allows knowledge bases to be updated without retraining the underlying language model.",
+        "source": "ml_engineering_handbook",
+        "topic": "RAG"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "chunk_009",
+        "score": 0.253866,
+        "text": "Production systems require robust observability to diagnose performance bottlenecks and failures. The three pillars of observability are metrics, logs, and distributed traces. Metrics are numeric time-series data captured by tools such as Prometheus and exposed via instrumented endpoints. Structured logs record discrete events with machine-parseable fields, aggregated in platforms such as Elasticsearch or Cloud Logging. Distributed tracing, implemented with OpenTelemetry, propagates trace IDs across service boundaries, enabling end-to-end latency analysis. Dashboards in Grafana or Cloud Monitoring visualise these signals for on-call engineers.",
+        "source": "sre_playbook",
+        "topic": "observability"
+      },
+      {
+        "rank": 3,
+        "chunk_id": "chunk_006",
+        "score": 0.166836,
+        "text": "The transformer architecture relies on self-attention to model relationships between all tokens in a sequence simultaneously. For each token, the model computes query, key, and value projections. Attention scores are derived from the dot product of queries and keys, scaled by the square root of the key dimension to prevent gradient saturation, and then passed through a softmax to produce attention weights. Multi-head attention runs several attention computations in parallel, each learning different aspects of token relationships. This parallelism makes transformers highly efficient on modern GPU hardware.",
+        "source": "deep_learning_fundamentals",
+        "topic": "transformers"
+      }
+    ],
+    "strategy_b": [
+      {
+        "rank": 1,
+        "chunk_id": "chunk_003",
+        "score": 0.680226,
+        "text": "Retrieval-Augmented Generation (RAG) combines a retrieval component with a language model to produce grounded, factual responses. During ingestion, source documents are chunked, embedded, and stored in a vector database. At query time, the user question is embedded and the nearest chunks are retrieved. These chunks form the context that is passed alongside the query to a generative model. RAG reduces hallucination by anchoring the model output to retrieved evidence. It also allows knowledge bases to be updated without retraining the underlying language model.",
+        "source": "ml_engineering_handbook",
+        "topic": "RAG"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "chunk_002",
+        "score": 0.459574,
+        "text": "Vector embeddings are dense numerical representations of text that capture semantic meaning. Unlike traditional keyword search, embedding-based retrieval computes similarity in a high-dimensional space, enabling retrieval of conceptually related content even when exact keywords differ. Models such as sentence-transformers encode sentences into fixed-length vectors of 384 or 768 dimensions. Cosine similarity measures the angle between two vectors, returning a score between -1 and 1, where 1 indicates identical semantic meaning. This approach powers modern search, recommendation, and question-answering systems.",
+        "source": "ml_engineering_handbook",
+        "topic": "embeddings"
+      },
+      {
+        "rank": 3,
+        "chunk_id": "chunk_008",
+        "score": 0.279219,
+        "text": "FAISS (Facebook AI Similarity Search) provides multiple index types optimised for different trade-offs between speed, memory, and recall. The flat index (IndexFlatL2, IndexFlatIP) performs exact brute-force search and is suitable for small corpora up to a few hundred thousand vectors. IVF (Inverted File) indexes partition the vector space into Voronoi cells, enabling approximate search by probing only a subset of cells. HNSW (Hierarchical Navigable Small World) graphs offer very fast approximate search with high recall. Product Quantisation (PQ) compresses vectors to reduce memory footprint at the cost of some recall accuracy.",
+        "source": "ml_engineering_handbook",
+        "topic": "vector_databases"
+      }
+    ],
+    "comparison_note": "Strategy B returned more RAG-specific chunks.  Expansion keywords such as 'chunking', 'grounding', and 'language model' help surface the RAG architecture chunk."
+  }
+]
